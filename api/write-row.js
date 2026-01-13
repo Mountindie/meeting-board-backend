@@ -2,7 +2,10 @@ import { google } from "googleapis";
 
 export default async function handler(req, res) {
   // ---- CORS ----
-  res.setHeader("Access-Control-Allow-Origin", "*");
+  res.setHeader(
+    "Access-Control-Allow-Origin",
+    "https://meeting-board-sl.vercel.app"
+  );
   res.setHeader("Access-Control-Allow-Methods", "POST, OPTIONS");
   res.setHeader("Access-Control-Allow-Headers", "Content-Type");
 
@@ -33,12 +36,14 @@ export default async function handler(req, res) {
 
     const sheets = google.sheets({ version: "v4", auth });
 
+    const { name, status, timestamp } = req.body;
+
     await sheets.spreadsheets.values.append({
       spreadsheetId: GOOGLE_SHEET_ID,
       range: "PingTest!A1",
       valueInputOption: "USER_ENTERED",
       requestBody: {
-        values: [Object.values(req.body)]
+        values: [[name, status, timestamp]]
       }
     });
 

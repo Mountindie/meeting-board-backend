@@ -1,4 +1,7 @@
 {
   "name": "vercel-function-test",
-  "private": true
+  "private": true,
+  "dependencies": {
+    "googleapis": "^170.0.0"
+  }
 }

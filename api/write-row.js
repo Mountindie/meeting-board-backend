@@ -36,14 +36,40 @@ export default async function handler(req, res) {
 
     const sheets = google.sheets({ version: "v4", auth });
 
-    const { name, status, timestamp } = req.body;
+    const {
+      id,
+      client,
+      recruiter,
+      candidate,
+      stage,
+      stageDate,
+      businessLine,
+      risk,
+      notes,
+      createdAt,
+      updatedAt
+    } = req.body;
 
     await sheets.spreadsheets.values.append({
       spreadsheetId: GOOGLE_SHEET_ID,
       range: "PingTest!A1",
       valueInputOption: "USER_ENTERED",
       requestBody: {
-        values: [[name, status, timestamp]]
+        values: [
+          [
+            id,
+            client,
+            recruiter,
+            candidate,
+            stage,
+            stageDate,
+            businessLine,
+            risk,
+            notes,
+            createdAt,
+            updatedAt
+          ]
+        ]
       }
     });
 

@@ -49,9 +49,17 @@ export default async function handler(req, res) {
     }
 
     const normalizedRows = rows.map((row) => ({
-      name: row[0] || "",
-      status: row[1] || "",
-      timestamp: row[2] || ""
+      id: row[0] || "",
+      client: row[1] || "",
+      recruiter: row[2] || "",
+      candidate: row[3] || "",
+      stage: row[4] || "",
+      stageDate: row[5] || "",
+      businessLine: row[6] || "",
+      risk: row[7] || "",
+      notes: row[8] || "",
+      createdAt: row[9] || "",
+      updatedAt: row[10] || ""
     }));
 
     return res.status(200).json({ ok: true, rows: normalizedRows });

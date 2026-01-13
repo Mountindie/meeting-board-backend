@@ -37,6 +37,7 @@ export default async function handler(req, res) {
     const sheets = google.sheets({ version: "v4", auth });
 
     const {
+      tab,
       id,
       client,
       recruiter,
@@ -48,30 +49,58 @@ export default async function handler(req, res) {
       notes,
       createdAt,
       updatedAt,
-      startDate
+      startDate,
+      status,
+      jobTitle
     } = req.body;
-    const targetSheet = startDate ? "PendingHires" : "ActiveBoard";
+
+    const targetSheet =
+      tab === "PendingHires" || tab === "ActiveBoard" ? tab : "ActiveBoard";
+
+    if (targetSheet === "PendingHires" && !startDate) {
+      return res
+        .status(400)
+        .json({ ok: false, error: "startDate required" });
+    }
 
     await sheets.spreadsheets.values.append({
       spreadsheetId: GOOGLE_SHEET_ID,
       range: `${targetSheet}!A1`,
       valueInputOption: "USER_ENTERED",
       requestBody: {
-        values: [
-          [
-            id,
-            client,
-            recruiter,
-            candidate,
-            stage,
-            stageDate,
-            businessLine,
-            risk,
-            notes,
-            createdAt,
-            updatedAt
-          ]
-        ]
+        values:
+          targetSheet === "PendingHires"
+            ? [
+                [
+                  id,
+                  candidate,
+                  client,
+                  jobTitle,
+                  recruiter,
+                  businessLine,
+                  startDate,
+                  status,
+                  notes,
+                  createdAt,
+                  updatedAt
+                ]
+              ]
+            : [
+                [
+                  id,
+                  client,
+                  jobTitle,
+                  businessLine,
+                  recruiter,
+                  candidate,
+                  stage,
+                  stageDate,
+                  risk,
+                  notes,
+                  createdAt,
+                  updatedAt
+                ]
+              ]
       }
     });
 

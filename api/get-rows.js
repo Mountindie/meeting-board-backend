@@ -36,8 +36,9 @@ export default async function handler(req, res) {
 
     const sheets = google.sheets({ version: "v4", auth });
 
-    const hasStartDate = Boolean(req.query && req.query.startDate);
-    const targetSheet = hasStartDate ? "PendingHires" : "ActiveBoard";
+    const tab = req.query && req.query.tab;
+    const targetSheet =
+      tab === "PendingHires" || tab === "ActiveBoard" ? tab : "ActiveBoard";
     const response = await sheets.spreadsheets.values.get({
       spreadsheetId: GOOGLE_SHEET_ID,
       range: targetSheet
@@ -50,19 +51,35 @@ export default async function handler(req, res) {
       return res.status(200).json({ ok: true, rows: [] });
     }
 
-    const normalizedRows = rows.map((row) => ({
-      id: row[0] || "",
-      client: row[1] || "",
-      recruiter: row[2] || "",
-      candidate: row[3] || "",
-      stage: row[4] || "",
-      stageDate: row[5] || "",
-      businessLine: row[6] || "",
-      risk: row[7] || "",
-      notes: row[8] || "",
-      createdAt: row[9] || "",
-      updatedAt: row[10] || ""
-    }));
+    const normalizedRows =
+      targetSheet === "PendingHires"
+        ? rows.map((row) => ({
+            id: row[0] || "",
+            candidate: row[1] || "",
+            client: row[2] || "",
+            jobTitle: row[3] || "",
+            recruiter: row[4] || "",
+            businessLine: row[5] || "",
+            startDate: row[6] || "",
+            status: row[7] || "",
+            notes: row[8] || "",
+            createdAt: row[9] || "",
+            updatedAt: row[10] || ""
+          }))
+        : rows.map((row) => ({
+            id: row[0] || "",
+            client: row[1] || "",
+            jobTitle: row[2] || "",
+            businessLine: row[3] || "",
+            recruiter: row[4] || "",
+            candidate: row[5] || "",
+            stage: row[6] || "",
+            stageDate: row[7] || "",
+            risk: row[8] || "",
+            notes: row[9] || "",
+            createdAt: row[10] || "",
+            updatedAt: row[11] || ""
+          }));
 
     return res.status(200).json({ ok: true, rows: normalizedRows });
   } catch (err) {

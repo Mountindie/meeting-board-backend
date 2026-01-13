@@ -35,7 +35,7 @@ export default async function handler(req, res) {
 
     await sheets.spreadsheets.values.append({
       spreadsheetId: GOOGLE_SHEET_ID,
-      range: "Sheet1!A1",
+      range: "PingTest!A1",
       valueInputOption: "USER_ENTERED",
       requestBody: {
         values: [Object.values(req.body)]

@@ -47,12 +47,14 @@ export default async function handler(req, res) {
       risk,
       notes,
       createdAt,
-      updatedAt
+      updatedAt,
+      startDate
     } = req.body;
+    const targetSheet = startDate ? "PendingHires" : "ActiveBoard";
 
     await sheets.spreadsheets.values.append({
       spreadsheetId: GOOGLE_SHEET_ID,
-      range: "PingTest!A1",
+      range: `${targetSheet}!A1`,
       valueInputOption: "USER_ENTERED",
       requestBody: {
         values: [

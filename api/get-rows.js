@@ -36,9 +36,11 @@ export default async function handler(req, res) {
 
     const sheets = google.sheets({ version: "v4", auth });
 
+    const hasStartDate = Boolean(req.query && req.query.startDate);
+    const targetSheet = hasStartDate ? "PendingHires" : "ActiveBoard";
     const response = await sheets.spreadsheets.values.get({
       spreadsheetId: GOOGLE_SHEET_ID,
-      range: "PingTest"
+      range: targetSheet
     });
 
     const values = response.data.values || [];

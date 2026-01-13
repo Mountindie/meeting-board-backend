@@ -51,17 +51,12 @@ export default async function handler(req, res) {
       updatedAt,
       startDate,
       status,
-      jobTitle
+      jobTitle,
+      start_date
     } = req.body;
 
-    const targetSheet =
-      tab === "PendingHires" || tab === "ActiveBoard" ? tab : "ActiveBoard";
-
-    if (targetSheet === "PendingHires" && !startDate) {
-      return res
-        .status(400)
-        .json({ ok: false, error: "startDate required" });
-    }
+    const startDateValue = startDate || start_date || "";
+    const targetSheet = startDateValue ? "PendingHires" : "ActiveBoard";
 
     await sheets.spreadsheets.values.append({
       spreadsheetId: GOOGLE_SHEET_ID,
@@ -78,7 +73,7 @@ export default async function handler(req, res) {
                   jobTitle,
                   recruiter,
                   businessLine,
-                  startDate,
+                  startDateValue,
                   status,
                   notes,
                   createdAt,

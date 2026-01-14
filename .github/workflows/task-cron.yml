@@ -1,0 +1,14 @@
+name: Task Reminder Cron
+
+on:
+  schedule:
+    - cron: "*/10 * * * *"
+  workflow_dispatch: {}
+
+jobs:
+  run-cron:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Call task cron endpoint
+        run: |
+          curl -fsS "${{ secrets.CRON_URL }}?secret=${{ secrets.CRON_SECRET }}"

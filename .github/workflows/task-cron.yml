@@ -9,6 +9,26 @@ jobs:
   run-cron:
     runs-on: ubuntu-latest
     steps:
+      - name: Validate cron secrets
+        run: |
+          if [ -z "${{ secrets.CRON_URL }}" ]; then
+            echo "CRON_URL is missing"
+            exit 1
+          fi
+          if [ -z "${{ secrets.CRON_SECRET }}" ]; then
+            echo "CRON_SECRET is missing"
+            exit 1
+          fi
+          echo "Cron secrets present"
       - name: Call task cron endpoint
         run: |
-          curl -fsS "${{ secrets.CRON_URL }}?secret=${{ secrets.CRON_SECRET }}"
+          response_file=$(mktemp)
+          http_code=$(curl -sS -o "$response_file" -w "%{http_code}" "${{ secrets.CRON_URL }}?secret=${{ secrets.CRON_SECRET }}")
+          echo "task-cron status: $http_code"
+          if [ -s "$response_file" ]; then
+            echo "task-cron response:"
+            cat "$response_file"
+          fi
+          if [ "$http_code" -ge 400 ]; then
+            exit 1
+          fi

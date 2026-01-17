@@ -41,6 +41,7 @@ module.exports = async (req, res) => {
 
   try {
     const auth = buildAuth();
+    await auth.authorize();
     const sheets = google.sheets({ version: "v4", auth });
 
     const SHEET_ID = process.env.GOOGLE_SHEET_ID;

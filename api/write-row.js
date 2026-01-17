@@ -4,6 +4,13 @@ const ALLOWED_ORIGIN = "https://meeting-board-sl.vercel.app";
 const DEFAULT_TAB = "ActiveBoard";
 const ACTIVITY_LOG_TAB = "ActivityLog";
 
+function generateId() {
+  if (typeof crypto !== "undefined" && typeof crypto.randomUUID === "function") {
+    return crypto.randomUUID();
+  }
+  return `row-${Date.now()}-${Math.floor(Math.random() * 100000)}`;
+}
+
 function normalizeHeader(value) {
   return String(value || "")
     .trim()
@@ -623,11 +630,14 @@ export default async function handler(req, res) {
     const payload = typeof req.body === "string" ? JSON.parse(req.body) : req.body;
     const rowData = payload.row && typeof payload.row === "object" ? payload.row : null;
     const data = rowData ? { ...payload, ...rowData } : payload;
-    const id = data.id || data.client;
+    let id = data.id || data.client;
     const sheetTitle = payload.tab || DEFAULT_TAB;
     const mode = payload.mode || "";
-    if (!id) {
+    if (mode === "patch" && !id) {
       return res.status(400).json({ ok: false, error: "Missing id" });
+    }
+    if (!id) {
+      id = generateId();
     }
     const logEvents = Array.isArray(payload.logEvents) ? payload.logEvents : [];
     if (logEvents.length === 0) {
@@ -812,7 +822,7 @@ export default async function handler(req, res) {
 
     console.log("sheet write success");
 
-    res.status(200).json({ ok: true });
+    res.status(200).json({ ok: true, id });
   } catch (err) {
     console.error("write-row error", err);
     res.status(500).json({

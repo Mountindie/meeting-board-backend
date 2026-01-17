@@ -636,7 +636,7 @@ export default async function handler(req, res) {
     if (mode === "patch" && !id) {
       return res.status(400).json({ ok: false, error: "Missing id" });
     }
-    if (!id) {
+    if (!id || (sheetTitle === DEFAULT_TAB && mode !== "patch" && !data.id)) {
       id = generateId();
     }
     const logEvents = Array.isArray(payload.logEvents) ? payload.logEvents : [];
